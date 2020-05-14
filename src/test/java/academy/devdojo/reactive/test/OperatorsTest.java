@@ -2,6 +2,7 @@ package academy.devdojo.reactive.test;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
+import reactor.test.StepVerifier.Step;
 
 @Slf4j
 public class OperatorsTest {
@@ -180,6 +182,53 @@ public class OperatorsTest {
         AtomicLong atomicLong = new AtomicLong();
         defer.subscribe(atomicLong::set);
         Assertions.assertTrue(atomicLong.get() > 0);
+    }
+
+    @Test
+    public void concatOperator() {
+        Flux<String> flux1 = Flux.just("a", "b");
+        Flux<String> flux2 = Flux.just("c", "d");
+
+        Flux<String> concatFlux = Flux.concat(flux1, flux2).log();
+
+        StepVerifier
+            .create(concatFlux)
+            .expectSubscription()
+            .expectNext("a", "b", "c", "d")
+            .expectComplete()
+            .verify();
+    }
+
+    @Test
+    public void concatWithOperator() {
+        Flux<String> flux1 = Flux.just("a", "b");
+        Flux<String> flux2 = Flux.just("c", "d");
+
+        Flux<String> concatFlux = flux1.concatWith(flux2).log();
+
+        StepVerifier
+            .create(concatFlux)
+            .expectSubscription()
+            .expectNext("a", "b", "c", "d")
+            .expectComplete()
+            .verify();
+    }
+
+    @Test
+    public void combineLatestOperator() {
+        Flux<String> flux1 = Flux.just("a", "b");
+        Flux<String> flux2 = Flux.just("c", "d");
+
+        Flux<String> combineLatest = Flux.combineLatest(flux1, flux2,
+            (s1, s2) -> s1.toUpperCase() + s2.toUpperCase())
+            .log();
+
+        StepVerifier
+            .create(combineLatest)
+            .expectSubscription()
+            .expectNext("BC", "BD")
+            .expectComplete()
+            .verify();
     }
 
     private Flux<Object> emptyFlux() {
