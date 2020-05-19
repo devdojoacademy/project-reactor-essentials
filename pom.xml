@@ -15,9 +15,16 @@
         <lombok.version>1.18.12</lombok.version>
         <junit-jupiter-api.version>5.7.0-M1</junit-jupiter-api.version>
         <slf4j-api.version>1.7.30</slf4j-api.version>
+        <blockhound.version>1.0.3.RELEASE</blockhound.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.projectreactor.tools</groupId>
+            <artifactId>blockhound</artifactId>
+            <version>${blockhound.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
